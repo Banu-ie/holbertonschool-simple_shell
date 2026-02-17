@@ -1,0 +1,40 @@
+.TH SIMPLE_SHELL 1 "February 2026" "Holberton School" "User Commands"
+.SH NAME
+simple_shell \- a simple UNIX command interpreter
+.SH SYNOPSIS
+.B hsh
+.SH DESCRIPTION
+simple_shell is a simple UNIX command interpreter. It reads commands from
+standard input and executes them in interactive or non-interactive mode.
+.SH USAGE
+Interactive mode:
+.PP
+.nf
+./hsh
+($) ls
+($) /bin/ls
+($) exit
+.fi
+.PP
+Non-interactive mode:
+.PP
+.nf
+echo "/bin/ls" | ./hsh
+cat file_with_commands | ./hsh
+.fi
+.SH BUILTINS
+.TP
+.B exit
+Exit the shell.
+.TP
+.B env
+Print the current environment.
+.SH ENVIRONMENT
+The shell uses the PATH environment variable to locate executable programs.
+.SH SEE ALSO
+.BR sh (1),
+.BR execve (2),
+.BR fork (2),
+.BR wait (2)
+.SH AUTHORS
+See AUTHORS file in the project repository.
