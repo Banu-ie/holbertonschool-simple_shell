@@ -1,25 +1,24 @@
 # Simple Shell (hsh)
 
-A simple UNIX command interpreter written in C (Holberton School project).
+A simple UNIX command interpreter written in C as part of the Holberton School curriculum.
+
+This repository currently contains the required documentation files (Task 0).
+The shell implementation will be added in the next tasks.
+
+---
+
+## Requirements
+
+- Allowed editors: vi, vim, emacs
+- Compiled on Ubuntu 20.04 LTS using:
+  - `gcc -Wall -Werror -Wextra -pedantic -std=gnu89`
+- All files end with a new line
+- Betty style compliant
+- No memory leaks (when the shell code is implemented)
+
+---
 
 ## Compilation
+
+```sh
 gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
-
-## Usage
-
-Interactive mode (type commands manually):
-./hsh
-($) /bin/ls
-($) ls -l
-($) exit
-
-Non-interactive mode (commands from pipe/file):
-echo "/bin/ls" | ./hsh
-cat file_with_commands | ./hsh
-
-## Built-ins
-- exit: exits the shell
-- env: prints the environment
-
-## Authors
-See AUTHORS file.
