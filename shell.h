@@ -1,13 +1,29 @@
 #ifndef SHELL_H
 #define SHELL_H
 
+#include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <string.h>
+
+extern char **environ;
 
 /**
- * print_hello - prints a simple message (Task 1)
- *
- * Return: Nothing
+ * struct shell_state - shell runtime state
+ * @prog: program name (argv[0])
+ * @line_num: command counter
+ * @interactive: 1 if interactive, 0 otherwise
  */
-void print_hello(void);
+typedef struct shell_state
+{
+	char *prog;
+	unsigned long line_num;
+	int interactive;
+} shell_state_t;
+
+void print_prompt(int interactive);
+void print_not_found(shell_state_t *st, const char *cmd);
 
 #endif /* SHELL_H */
