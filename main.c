@@ -15,4 +15,3 @@ int main(int ac, char **av)
 	print_hello();
 	return (0);
 }
-git add shell.h main.c utils.c
