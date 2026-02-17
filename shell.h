@@ -25,7 +25,11 @@ typedef struct shell_state
 
 void print_prompt(int interactive);
 void print_not_found(shell_state_t *st, const char *cmd);
+
+char **tokenize_line(char *line);
+void free_argv(char **argv);
+
 int run_shell(shell_state_t *st);
-int execute_cmd(shell_state_t *st, char *cmd);
+int execute_cmd(shell_state_t *st, char **argv);
 
 #endif /* SHELL_H */

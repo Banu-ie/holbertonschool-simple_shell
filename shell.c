@@ -1,21 +1,24 @@
 #include "shell.h"
 
 /**
- * execute_cmd - forks and executes a command (full path, no args)
+ * execute_cmd - forks and executes a command with arguments
  * @st: shell state
- * @cmd: command to execute
+ * @argv: NULL-terminated argument vector
  *
  * Return: 0 always
  */
-int execute_cmd(shell_state_t *st, char *cmd)
+int execute_cmd(shell_state_t *st, char **argv)
 {
 	pid_t pid;
 	int status;
-	char *argv_exec[2];
 
-	if (access(cmd, X_OK) == -1)
+	if (argv == NULL || argv[0] == NULL)
+		return (0);
+
+	/* Task 0.2: no PATH yet, so argv[0] must be a valid path or ./file */
+	if (access(argv[0], X_OK) == -1)
 	{
-		print_not_found(st, cmd);
+		print_not_found(st, argv[0]);
 		return (0);
 	}
 
@@ -28,10 +31,7 @@ int execute_cmd(shell_state_t *st, char *cmd)
 
 	if (pid == 0)
 	{
-		argv_exec[0] = cmd;
-		argv_exec[1] = NULL;
-
-		execve(cmd, argv_exec, environ);
+		execve(argv[0], argv, environ);
 		perror(st->prog);
 		_exit(127);
 	}
@@ -41,16 +41,17 @@ int execute_cmd(shell_state_t *st, char *cmd)
 }
 
 /**
- * run_shell - main loop of the shell (0.1)
+ * run_shell - main loop of the shell (0.2: arguments)
  * @st: shell state
  *
  * Return: 0 on success
  */
 int run_shell(shell_state_t *st)
 {
-	char *line = NULL, *cmd = NULL;
+	char *line = NULL;
 	size_t len = 0;
 	ssize_t nread;
+	char **argv;
 
 	while (1)
 	{
@@ -65,10 +66,13 @@ int run_shell(shell_state_t *st)
 
 		st->line_num++;
 
-		cmd = strtok(line, " \t\n");
-		if (cmd == NULL)
+		argv = tokenize_line(line);
+		if (argv == NULL)
 			continue;
 
-		execute_cmd(st, cmd);
+		if (argv[0] != NULL)
+			execute_cmd(st, argv);
+
+		free_argv(argv);
 	}
 }
