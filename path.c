@@ -1,6 +1,28 @@
 #include "shell.h"
 
 /**
+ * get_path_from_env - gets PATH value from environ
+ *
+ * Return: pointer to PATH value or NULL
+ */
+char *get_path_from_env(void)
+{
+	int i = 0;
+	char *path;
+
+	while (environ[i])
+	{
+		if (strncmp(environ[i], "PATH=", 5) == 0)
+		{
+			path = environ[i] + 5;
+			return (path);
+		}
+		i++;
+	}
+	return (NULL);
+}
+
+/**
  * find_in_path - searches PATH for a command
  * @cmd: command name
  *
@@ -8,8 +30,7 @@
  */
 char *find_in_path(const char *cmd)
 {
-	char *path_env, *path_copy, *dir, *saveptr;
-	char *full_path;
+	char *path_env, *path_copy, *dir, *full_path;
 	size_t len;
 
 	if (!cmd)
@@ -23,7 +44,7 @@ char *find_in_path(const char *cmd)
 		return (NULL);
 	}
 
-	path_env = getenv("PATH");
+	path_env = get_path_from_env();
 	if (!path_env || path_env[0] == '\0')
 		return (NULL);
 
@@ -31,7 +52,7 @@ char *find_in_path(const char *cmd)
 	if (!path_copy)
 		return (NULL);
 
-	dir = strtok_r(path_copy, ":", &saveptr);
+	dir = strtok(path_copy, ":");
 	while (dir)
 	{
 		len = strlen(dir) + strlen(cmd) + 2;
@@ -51,7 +72,7 @@ char *find_in_path(const char *cmd)
 		}
 
 		free(full_path);
-		dir = strtok_r(NULL, ":", &saveptr);
+		dir = strtok(NULL, ":");
 	}
 
 	free(path_copy);
