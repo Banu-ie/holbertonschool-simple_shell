@@ -14,8 +14,8 @@ extern char **environ;
 char *get_path(const char *cmd)
 {
 	char *path_env = NULL;
-	char *path_copy, *token;
-	char *full_path;
+	char *path_copy = NULL, *token;
+	char *full_path = NULL;
 	size_t len;
 	int i;
 
@@ -26,6 +26,7 @@ char *get_path(const char *cmd)
 		return NULL;
 	}
 
+	/* Find PATH in environment */
 	for (i = 0; environ[i]; i++)
 	{
 		if (strncmp(environ[i], "PATH=", 5) == 0)
@@ -48,20 +49,18 @@ char *get_path(const char *cmd)
 		len = strlen(token) + strlen(cmd) + 2;
 		full_path = malloc(len);
 		if (!full_path)
-		{
-			free(path_copy);
-			return NULL;
-		}
+			break;
 
-		sprintf(full_path, "%s/%s", token, cmd);
+		snprintf(full_path, len, "%s/%s", token, cmd);
 
 		if (access(full_path, X_OK) == 0)
 		{
-			free(path_copy);
+			free(path_copy); 
 			return full_path;
 		}
 
 		free(full_path);
+		full_path = NULL;
 		token = strtok(NULL, ":");
 	}
 
