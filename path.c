@@ -8,13 +8,14 @@
  */
 char *find_in_path(const char *cmd)
 {
-	char *path_env, *path_copy, *dir, *full_path;
+	char *path_env, *path_copy, *dir, *saveptr;
+	char *full_path;
 	size_t len;
 
 	if (!cmd)
 		return (NULL);
 
-	/* If command contains '/' check directly */
+	/* If command contains '/', check directly */
 	if (strchr(cmd, '/'))
 	{
 		if (access(cmd, X_OK) == 0)
@@ -30,7 +31,7 @@ char *find_in_path(const char *cmd)
 	if (!path_copy)
 		return (NULL);
 
-	dir = strtok(path_copy, ":");
+	dir = strtok_r(path_copy, ":", &saveptr);
 	while (dir)
 	{
 		len = strlen(dir) + strlen(cmd) + 2;
@@ -50,7 +51,7 @@ char *find_in_path(const char *cmd)
 		}
 
 		free(full_path);
-		dir = strtok(NULL, ":");
+		dir = strtok_r(NULL, ":", &saveptr);
 	}
 
 	free(path_copy);
