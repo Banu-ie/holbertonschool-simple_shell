@@ -1,12 +1,7 @@
 #include "shell.h"
 
-/**
- * split_line - wrapper for tokenize_line
- * @line: input line
- *
- * Return: array of tokens
- */
+/* Task 4: tokenize_line wrapper */
 char **split_line(char *line)
 {
-	return (tokenize_line(line));
+	return tokenize_line(line);
 }
