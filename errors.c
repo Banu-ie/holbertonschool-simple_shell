@@ -1,7 +1,12 @@
 #include "shell.h"
 #include <stdio.h>
+#include "shell.h"
 
-/* Corrected function to match header */
+/**
+ * print_not_found - prints command not found error
+ * @st: shell state
+ * @cmd: command name
+ */
 void print_not_found(shell_state_t *st, char *cmd)
 {
     fprintf(stderr, "%s: %d: %s: not found\n",

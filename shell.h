@@ -19,13 +19,11 @@ typedef struct shell_state
 void print_prompt(int interactive);
 char **tokenize_line(char *line);
 void free_argv(char **argv);
-void print_not_found(shell_state_t *st, char *cmd);
+void print_not_found(shell_state_t *st, const char *cmd);
 int execute_cmd(shell_state_t *st, char **argv);
 int run_shell(shell_state_t *st);
 
 /* Added function to find command in PATH */
 char *get_path(const char *cmd);
-
-void print_not_found(shell_state_t *st, const char *cmd);
 
 #endif /* SHELL_H */

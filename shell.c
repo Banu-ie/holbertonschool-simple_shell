@@ -1,11 +1,11 @@
 #include "shell.h"
 
-extern char **environ;  // gives access to environment variables for execve
+extern char **environ;
 
 /**
- * execute_cmd - forks and executes a command with arguments
+ * execute_cmd - forks and executes a command
  * @st: shell state
- * @argv: NULL-terminated argument vector
+ * @argv: argument vector
  *
  * Return: 0 always
  */
@@ -18,7 +18,6 @@ int execute_cmd(shell_state_t *st, char **argv)
     if (!argv || !argv[0])
         return 0;
 
-    /* Find the command path using PATH */
     cmd_path = get_path(argv[0]);
     if (!cmd_path)
     {
@@ -36,23 +35,23 @@ int execute_cmd(shell_state_t *st, char **argv)
 
     if (pid == 0)
     {
-        /* Execute the command */
         execve(cmd_path, argv, environ);
         perror(st->prog);
+        free(cmd_path);
         _exit(127);
     }
 
-    /* Wait for child process */
     waitpid(pid, &status, 0);
     free(cmd_path);
+
     return 0;
 }
 
 /**
- * run_shell - main loop of the shell
+ * run_shell - main shell loop
  * @st: shell state
  *
- * Return: 0 on success
+ * Return: 0 on EOF
  */
 int run_shell(shell_state_t *st)
 {
@@ -64,8 +63,8 @@ int run_shell(shell_state_t *st)
     while (1)
     {
         print_prompt(st->interactive);
-        nread = getline(&line, &len, stdin);
 
+        nread = getline(&line, &len, stdin);
         if (nread == -1)
         {
             free(line);

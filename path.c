@@ -1,13 +1,12 @@
 #include "shell.h"
 
-/* Declare extern environ */
 extern char **environ;
 
 /**
- * get_path - finds the full path of a command using PATH
+ * get_path - finds executable path using PATH variable
  * @cmd: command name
  *
- * Return: full path to executable or NULL if not found
+ * Return: full path string or NULL if not found
  */
 char *get_path(const char *cmd)
 {
@@ -17,7 +16,7 @@ char *get_path(const char *cmd)
     size_t len;
     int i;
 
-    /* If the command contains '/', use it directly */
+    /* If command contains '/', use it directly */
     if (strchr(cmd, '/'))
     {
         if (access(cmd, X_OK) == 0)
@@ -25,7 +24,7 @@ char *get_path(const char *cmd)
         return NULL;
     }
 
-    /* Search for PATH in environ */
+    /* Search PATH in environ */
     for (i = 0; environ[i]; i++)
     {
         if (strncmp(environ[i], "PATH=", 5) == 0)
@@ -35,7 +34,7 @@ char *get_path(const char *cmd)
         }
     }
 
-    if (!path_env)
+    if (!path_env || path_env[0] == '\0')
         return NULL;
 
     path_copy = strdup(path_env);
@@ -52,12 +51,15 @@ char *get_path(const char *cmd)
             free(path_copy);
             return NULL;
         }
-        snprintf(full_path, len, "%s/%s", token, cmd);
+
+        sprintf(full_path, "%s/%s", token, cmd);
+
         if (access(full_path, X_OK) == 0)
         {
             free(path_copy);
             return full_path;
         }
+
         free(full_path);
         token = strtok(NULL, ":");
     }
