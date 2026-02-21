@@ -10,10 +10,10 @@
 /* Shell state structure */
 typedef struct shell_state
 {
-	char *prog;            /* program name */
-	int interactive;       /* interactive mode flag */
-	unsigned int line_num; /* line counter */
-	int status;            /* last command exit status */
+    char *prog;            /* program name */
+    int interactive;       /* interactive mode flag */
+    unsigned int line_num; /* line counter */
+    int status;            /* last command exit status */
 } shell_state_t;
 
 /* Function prototypes */
