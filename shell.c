@@ -7,41 +7,43 @@
  *
  * Return: 0 always
  */
+
 int execute_cmd(shell_state_t *st, char **argv)
 {
-	pid_t pid;
-	int status;
-	char *full_path;
+    pid_t pid;
+    int status;
+    char *cmd_path;
 
-	if (argv == NULL || argv[0] == NULL)
-		return (0);
+    if (argv == NULL || argv[0] == NULL)
+        return (0);
 
-	full_path = find_in_path(argv[0]);
-	if (!full_path)
-	{
-		print_not_found(st, argv[0]);
-		return (0);
-	}
+    cmd_path = get_path(argv[0]);
 
-	pid = fork();
-	if (pid == -1)
-	{
-		perror(st->prog);
-		free(full_path);
-		return (0);
-	}
+    if (cmd_path == NULL)
+    {
+        print_not_found(st, argv[0]);
+        return (0);
+    }
 
-	if (pid == 0)
-	{
-		execve(full_path, argv, environ);
-		perror(st->prog);
-		free(full_path);
-		_exit(127);
-	}
+    pid = fork();
+    if (pid == -1)
+    {
+        perror(st->prog);
+        free(cmd_path);
+        return (0);
+    }
 
-	waitpid(pid, &status, 0);
-	free(full_path);
-	return (0);
+    if (pid == 0)
+    {
+        execve(cmd_path, argv, environ);
+        perror(st->prog);
+        free(cmd_path);
+        exit(127);
+    }
+
+    waitpid(pid, &status, 0);
+    free(cmd_path);
+    return (0);
 }
 
 /**
@@ -50,6 +52,7 @@ int execute_cmd(shell_state_t *st, char **argv)
  *
  * Return: 0 on success
  */
+ 
 int run_shell(shell_state_t *st)
 {
 	char *line = NULL;
