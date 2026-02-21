@@ -90,6 +90,33 @@ static char *read_line(shell_state_t *st)
 }
 
 /**
+ * process_line - read and execute one line
+ * @st: shell state
+ *
+ * Return: 1 if should continue, 0 on EOF
+ */
+static int process_line(shell_state_t *st)
+{
+	char *line = read_line(st);
+	char **argv;
+
+	if (!line)
+		return (0);
+
+	argv = tokenize_line(line);
+	free(line);
+
+	if (!argv)
+		return (1);
+
+	if (argv[0])
+		execute_cmd(st, argv);
+
+	free_argv(argv);
+	return (1);
+}
+
+/**
  * run_shell - main shell loop
  * @st: shell state
  *
@@ -97,24 +124,8 @@ static char *read_line(shell_state_t *st)
  */
 int run_shell(shell_state_t *st)
 {
-	char *line;
-	char **argv;
+	while (process_line(st))
+		;
 
-	while (1)
-	{
-		line = read_line(st);
-		if (!line)
-			return (0);
-
-		argv = tokenize_line(line);
-		free(line);
-
-		if (!argv)
-			continue;
-
-		if (argv[0])
-			execute_cmd(st, argv);
-
-		free_argv(argv);
-	}
+	return (0);
 }
