@@ -1,9 +1,7 @@
 #include "shell.h"
 
 /**
- * get_path_env - retrieves PATH environment variable
- *
- * Return: pointer to PATH value or NULL
+ * get_path_env - retrieves PATH value
  */
 char *get_path_env(void)
 {
@@ -19,11 +17,7 @@ char *get_path_env(void)
 }
 
 /**
- * build_full_path - builds full path from dir + command
- * @dir: directory
- * @cmd: command
- *
- * Return: allocated string or NULL
+ * build_full_path - builds full path from dir and command
  */
 char *build_full_path(char *dir, char *cmd)
 {
@@ -44,24 +38,20 @@ char *build_full_path(char *dir, char *cmd)
 }
 
 /**
- * find_in_path - searches command inside PATH directories
- * @cmd: command name
- *
- * Return: full path if found, otherwise NULL
+ * find_in_path - searches command inside PATH
  */
 char *find_in_path(char *cmd)
 {
 	char *path_env, *path_copy, *dir, *full;
-	
+
 	if (cmd == NULL)
 		return (NULL);
 
-	/* if command already contains /, do not search PATH */
 	if (strchr(cmd, '/'))
 		return (NULL);
 
 	path_env = get_path_env();
-	if (path_env == NULL)
+	if (path_env == NULL || *path_env == '\0')
 		return (NULL);
 
 	path_copy = strdup(path_env);
