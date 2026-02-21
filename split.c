@@ -14,4 +14,3 @@ char **split_line(char *line)
 {
     return tokenize_line(line);
 }
-
