@@ -22,6 +22,7 @@ int execute_cmd(shell_state_t *st, char **argv)
     if (!cmd_path)
     {
         print_not_found(st, argv[0]);
+        st->status = 127;   // set correct status if command not found
         return 0;
     }
 
@@ -30,20 +31,32 @@ int execute_cmd(shell_state_t *st, char **argv)
     {
         perror(st->prog);
         free(cmd_path);
+        st->status = 127;   // fail status on fork error
         return 0;
     }
 
-    if (pid == 0)
+    if (pid == 0)  // child process
     {
         execve(cmd_path, argv, environ);
-        perror(st->prog);
-        free(cmd_path);
-        _exit(127);
+        print_not_found(st, argv[0]); // execve failed
+        _exit(127);                   // exit with correct status
     }
 
-    waitpid(pid, &status, 0);
-    free(cmd_path);
+    // parent process
+    if (waitpid(pid, &status, 0) == -1)
+    {
+        perror(st->prog);
+        st->status = 127;  // fail status if waitpid fails
+    }
+    else
+    {
+        if (WIFEXITED(status))
+            st->status = WEXITSTATUS(status);  // ✅ save child exit code
+        else
+            st->status = 127;  // abnormal exit
+    }
 
+    free(cmd_path);
     return 0;
 }
 
