@@ -11,15 +11,30 @@ int execute_cmd(shell_state_t *st, char **argv)
 {
 	pid_t pid;
 	int status;
+	char *full_path = NULL;
 
 	if (argv == NULL || argv[0] == NULL)
 		return (0);
 
-	/* Task 0.2: no PATH yet, so argv[0] must be a valid path or ./file */
-	if (access(argv[0], X_OK) == -1)
+	/* If command contains '/', try directly */
+	if (strchr(argv[0], '/'))
 	{
-		print_not_found(st, argv[0]);
-		return (0);
+		if (access(argv[0], X_OK) == -1)
+		{
+			print_not_found(st, argv[0]);
+			return (0);
+		}
+		full_path = argv[0];
+	}
+	else
+	{
+		full_path = find_in_path(argv[0]);
+		if (full_path == NULL)
+		{
+			print_not_found(st, argv[0]);
+			return (0);
+		}
+		argv[0] = full_path;
 	}
 
 	pid = fork();
@@ -37,6 +52,10 @@ int execute_cmd(shell_state_t *st, char **argv)
 	}
 
 	waitpid(pid, &status, 0);
+
+	if (!strchr(argv[0], '/'))
+		free(full_path);
+
 	return (0);
 }
 

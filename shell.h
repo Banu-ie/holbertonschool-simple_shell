@@ -31,5 +31,6 @@ void free_argv(char **argv);
 
 int run_shell(shell_state_t *st);
 int execute_cmd(shell_state_t *st, char **argv);
+char *find_in_path(char *cmd);
 
 #endif /* SHELL_H */
