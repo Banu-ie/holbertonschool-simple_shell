@@ -71,6 +71,7 @@ int run_shell(shell_state_t *st)
     size_t len = 0;
     ssize_t nread;
     char **argv;
+    int i;
 
     while (1)
     {
@@ -89,14 +90,25 @@ int run_shell(shell_state_t *st)
         if (!argv)
             continue;
 
-        /* ===== BUILTIN EXIT (TASK 5) ===== */
+        /* ===== BUILTIN EXIT ===== */
         if (argv[0] && strcmp(argv[0], "exit") == 0)
         {
             free_argv(argv);
             free(line);
             exit(st->status);
         }
-        /* ================================= */
+
+        /* ===== BUILTIN ENV ===== */
+        if (argv[0] && strcmp(argv[0], "env") == 0)
+        {
+            for (i = 0; environ[i]; i++)
+                printf("%s\n", environ[i]);
+
+            st->status = 0;
+            free_argv(argv);
+            continue;
+        }
+        /* ======================== */
 
         if (argv[0])
             execute_cmd(st, argv);
