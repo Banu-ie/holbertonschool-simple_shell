@@ -7,7 +7,6 @@
  *
  * Return: 0 always
  */
-
 int execute_cmd(shell_state_t *st, char **argv)
 {
     pid_t pid;
@@ -52,7 +51,6 @@ int execute_cmd(shell_state_t *st, char **argv)
  *
  * Return: 0 on success
  */
- 
 int run_shell(shell_state_t *st)
 {
 	char *line = NULL;
