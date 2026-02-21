@@ -5,16 +5,17 @@
  * @ac: argument count (unused)
  * @av: argument vector
  *
- * Return: 0 on success
+ * Return: shell exit status
  */
 int main(int ac, char **av)
 {
-	shell_state_t st;
+    shell_state_t st;
 
-	(void)ac;
-	st.prog = av[0];
-	st.line_num = 0;
-	st.interactive = isatty(STDIN_FILENO);
+    (void)ac;
+    st.prog = av[0];
+    st.line_num = 0;
+    st.interactive = isatty(STDIN_FILENO);
+    st.status = 0;   
 
-	return (run_shell(&st));
+    return (run_shell(&st));
 }
