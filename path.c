@@ -1,6 +1,28 @@
 #include "shell.h"
 
-extern char **environ;
+/**
+ * check_in_dir - checks if command exists in a directory
+ * @dir: directory path
+ * @cmd: command name
+ *
+ * Return: full path string or NULL
+ */
+static char *check_in_dir(const char *dir, const char *cmd)
+{
+	size_t len = strlen(dir) + strlen(cmd) + 2;
+	char *full_path = malloc(len);
+
+	if (!full_path)
+		return (NULL);
+
+	sprintf(full_path, "%s/%s", dir, cmd);
+
+	if (access(full_path, X_OK) == 0)
+		return (full_path);
+
+	free(full_path);
+	return (NULL);
+}
 
 /**
  * get_path - finds executable path using PATH variable
@@ -10,29 +32,16 @@ extern char **environ;
  */
 char *get_path(const char *cmd)
 {
-	char *path_env = NULL;
-	char *path_copy, *token;
-	char *full_path;
-	size_t len;
-	int i;
+	char *path_env;
+	char *path_copy;
+	char *token;
+	char *res;
 
 	if (strchr(cmd, '/'))
-	{
-		if (access(cmd, X_OK) == 0)
-			return (strdup(cmd));
-		return (NULL);
-	}
+		return (access(cmd, X_OK) == 0 ? strdup(cmd) : NULL);
 
-	for (i = 0; environ[i]; i++)
-	{
-		if (strncmp(environ[i], "PATH=", 5) == 0)
-		{
-			path_env = environ[i] + 5;
-			break;
-		}
-	}
-
-	if (!path_env || path_env[0] == '\0')
+	path_env = getenv("PATH");
+	if (!path_env || !*path_env)
 		return (NULL);
 
 	path_copy = strdup(path_env);
@@ -42,23 +51,12 @@ char *get_path(const char *cmd)
 	token = strtok(path_copy, ":");
 	while (token)
 	{
-		len = strlen(token) + strlen(cmd) + 2;
-		full_path = malloc(len);
-		if (!full_path)
+		res = check_in_dir(token, cmd);
+		if (res)
 		{
 			free(path_copy);
-			return (NULL);
+			return (res);
 		}
-
-		sprintf(full_path, "%s/%s", token, cmd);
-
-		if (access(full_path, X_OK) == 0)
-		{
-			free(path_copy);
-			return (full_path);
-		}
-
-		free(full_path);
 		token = strtok(NULL, ":");
 	}
 

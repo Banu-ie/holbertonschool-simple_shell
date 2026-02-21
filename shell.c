@@ -1,18 +1,16 @@
 #include "shell.h"
 
-extern char **environ;
-
 /**
  * handle_child_exit - handle child process exit status
  * @st: shell state
  * @status: waitpid status
  */
-void handle_child_exit(shell_state_t *st, int status)
+static void handle_child_exit(shell_state_t *st, int status)
 {
 	if (WIFEXITED(status))
 		st->status = WEXITSTATUS(status);
 	else
-		st->status = 127;
+		st->status = 127; /* abnormal exit */
 }
 
 /**
@@ -35,7 +33,7 @@ int execute_cmd(shell_state_t *st, char **argv)
 	if (!cmd_path)
 	{
 		print_not_found(st, argv[0]);
-		st->status = 127;
+		st->status = 127; /* command not found */
 		return (127);
 	}
 
@@ -44,13 +42,13 @@ int execute_cmd(shell_state_t *st, char **argv)
 	{
 		perror(st->prog);
 		free(cmd_path);
-		st->status = 127;
+		st->status = 127; /* fork failed */
 		return (127);
 	}
 
 	if (pid == 0)
 	{
-		execve(cmd_path, argv, environ);
+		execve(cmd_path, argv, NULL); /* inherit environment */
 		print_not_found(st, argv[0]);
 		_exit(127);
 	}
@@ -73,7 +71,7 @@ int execute_cmd(shell_state_t *st, char **argv)
  *
  * Return: line read or NULL
  */
-char *read_line(shell_state_t *st)
+static char *read_line(shell_state_t *st)
 {
 	char *line = NULL;
 	size_t len = 0;
