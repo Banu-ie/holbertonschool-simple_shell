@@ -12,7 +12,7 @@ void handle_child_exit(shell_state_t *st, int status)
 	if (WIFEXITED(status))
 		st->status = WEXITSTATUS(status);
 	else
-		st->status = 127; /* abnormal exit */
+		st->status = 127;
 }
 
 /**
@@ -35,6 +35,7 @@ int execute_cmd(shell_state_t *st, char **argv)
 	if (!cmd_path)
 	{
 		print_not_found(st, argv[0]);
+		st->status = 127;
 		return (127);
 	}
 
@@ -43,6 +44,7 @@ int execute_cmd(shell_state_t *st, char **argv)
 	{
 		perror(st->prog);
 		free(cmd_path);
+		st->status = 127;
 		return (127);
 	}
 
@@ -94,10 +96,6 @@ char *read_line(shell_state_t *st)
  * @st: shell state
  *
  * Return: 0 on EOF
- *
- * Notes:
- *  - line is freed after argv is used, so argv does not point
- *    to freed memory.
  */
 int run_shell(shell_state_t *st)
 {
@@ -110,17 +108,15 @@ int run_shell(shell_state_t *st)
 		if (!line)
 			return (0);
 
-		argv = split_line(line);
+		argv = tokenize_line(line);
+		free(line);
+
 		if (!argv)
-		{
-			free(line);
 			continue;
-		}
 
 		if (argv[0])
 			execute_cmd(st, argv);
 
 		free_argv(argv);
-		free(line);
 	}
 }
