@@ -1,5 +1,7 @@
 #include "shell.h"
 
+extern char **environ;  // gives access to environment variables for execve
+
 /**
  * execute_cmd - forks and executes a command with arguments
  * @st: shell state
