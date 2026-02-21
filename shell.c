@@ -11,12 +11,13 @@ int execute_cmd(shell_state_t *st, char **argv)
 {
 	pid_t pid;
 	int status;
+	char *full_path;
 
 	if (argv == NULL || argv[0] == NULL)
 		return (0);
 
-	/* Task 0.2: no PATH yet, so argv[0] must be a valid path or ./file */
-	if (access(argv[0], X_OK) == -1)
+	full_path = find_in_path(argv[0]);
+	if (!full_path)
 	{
 		print_not_found(st, argv[0]);
 		return (0);
@@ -26,17 +27,20 @@ int execute_cmd(shell_state_t *st, char **argv)
 	if (pid == -1)
 	{
 		perror(st->prog);
+		free(full_path);
 		return (0);
 	}
 
 	if (pid == 0)
 	{
-		execve(argv[0], argv, environ);
+		execve(full_path, argv, environ);
 		perror(st->prog);
+		free(full_path);
 		_exit(127);
 	}
 
 	waitpid(pid, &status, 0);
+	free(full_path);
 	return (0);
 }
 
@@ -74,5 +78,18 @@ int run_shell(shell_state_t *st)
 			execute_cmd(st, argv);
 
 		free_argv(argv);
+
+		nread = getline(&line, &len, stdin);
+
+		if (nread == -1)
+		{
+			free(line);
+			return (0);
+		}
+
+		if (nread > 0 && line[nread - 1] == '\n')
+			line[nread - 1] = '\0';
+
+		st->line_num++;
 	}
 }
