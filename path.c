@@ -1,74 +1,44 @@
 #include "shell.h"
 
 /**
- * get_path_env - retrieves PATH value
+ * find_in_path - searches PATH for a command
+ * @cmd: command name
+ *
+ * Return: malloced full path or NULL
  */
-char *get_path_env(void)
+char *find_in_path(const char *cmd)
 {
-	int i = 0;
-
-	while (environ[i])
-	{
-		if (strncmp(environ[i], "PATH=", 5) == 0)
-			return (environ[i] + 5);
-		i++;
-	}
-	return (NULL);
-}
-
-/**
- * build_full_path - builds full path from dir and command
- */
-char *build_full_path(char *dir, char *cmd)
-{
-	char *full;
+	char *path_env, *path_copy, *dir, *full_path;
 	size_t len;
 
-	len = strlen(dir) + strlen(cmd) + 2;
+	if (!cmd || strchr(cmd, '/'))
+		return (cmd[0] ? strdup(cmd) : NULL);
 
-	full = malloc(len);
-	if (full == NULL)
-		return (NULL);
-
-	strcpy(full, dir);
-	strcat(full, "/");
-	strcat(full, cmd);
-
-	return (full);
-}
-
-/**
- * find_in_path - searches command inside PATH
- */
-char *find_in_path(char *cmd)
-{
-	char *path_env, *path_copy, *dir, *full;
-
-	if (cmd == NULL)
-		return (NULL);
-
-	if (strchr(cmd, '/'))
-		return (NULL);
-
-	path_env = get_path_env();
-	if (path_env == NULL || *path_env == '\0')
+	path_env = getenv("PATH");
+	if (!path_env)
 		return (NULL);
 
 	path_copy = strdup(path_env);
-	if (path_copy == NULL)
+	if (!path_copy)
 		return (NULL);
 
 	dir = strtok(path_copy, ":");
-	while (dir != NULL)
+	while (dir)
 	{
-		full = build_full_path(dir, cmd);
-		if (full != NULL && access(full, X_OK) == 0)
+		len = strlen(dir) + 1 + strlen(cmd) + 1;
+		full_path = malloc(len);
+		if (!full_path)
 		{
 			free(path_copy);
-			return (full);
+			return (NULL);
 		}
-
-		free(full);
+		snprintf(full_path, len, "%s/%s", dir, cmd);
+		if (access(full_path, X_OK) == 0)
+		{
+			free(path_copy);
+			return (full_path);
+		}
+		free(full_path);
 		dir = strtok(NULL, ":");
 	}
 
