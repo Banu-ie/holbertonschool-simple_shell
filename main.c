@@ -15,6 +15,7 @@ int main(int ac, char **av)
 	st.prog = av[0];
 	st.line_num = 0;
 	st.interactive = isatty(STDIN_FILENO);
+	st.status = 0;
 
 	return (run_shell(&st));
 }

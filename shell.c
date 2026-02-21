@@ -12,7 +12,7 @@ void handle_child_exit(shell_state_t *st, int status)
 	if (WIFEXITED(status))
 		st->status = WEXITSTATUS(status);
 	else
-		st->status = 127; /* abnormal exit */
+		st->status = 127;
 }
 
 /**
@@ -35,6 +35,7 @@ int execute_cmd(shell_state_t *st, char **argv)
 	if (!cmd_path)
 	{
 		print_not_found(st, argv[0]);
+		st->status = 127;
 		return (127);
 	}
 
@@ -43,6 +44,7 @@ int execute_cmd(shell_state_t *st, char **argv)
 	{
 		perror(st->prog);
 		free(cmd_path);
+		st->status = 127;
 		return (127);
 	}
 
