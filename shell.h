@@ -19,6 +19,7 @@ typedef struct shell_state
 /* Function prototypes */
 void print_prompt(int interactive);
 char **tokenize_line(char *line);
+char **split_line(char *line);
 void free_argv(char **argv);
 char *get_path(const char *cmd);
 void print_not_found(shell_state_t *st, const char *cmd);

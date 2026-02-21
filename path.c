@@ -19,7 +19,6 @@ char *get_path(const char *cmd)
 	size_t len;
 	int i;
 
-	/* If command contains '/', use it directly */
 	if (strchr(cmd, '/'))
 	{
 		if (access(cmd, X_OK) == 0)
@@ -27,7 +26,6 @@ char *get_path(const char *cmd)
 		return NULL;
 	}
 
-	/* Search PATH in environ */
 	for (i = 0; environ[i]; i++)
 	{
 		if (strncmp(environ[i], "PATH=", 5) == 0)

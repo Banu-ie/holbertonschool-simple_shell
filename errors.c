@@ -2,9 +2,9 @@
 #include <stdio.h>
 
 /**
- * print_not_found - prints error when command not found
+ * print_not_found - prints command not found message
  * @st: shell state
- * @cmd: command name
+ * @cmd: command
  */
 void print_not_found(shell_state_t *st, const char *cmd)
 {

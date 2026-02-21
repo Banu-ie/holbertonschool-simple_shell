@@ -1,8 +1,7 @@
 #include "shell.h"
+#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/wait.h>
-#include <stdio.h>
 
 extern char **environ;
 
@@ -16,7 +15,7 @@ void handle_child_exit(shell_state_t *st, int status)
 	if (WIFEXITED(status))
 		st->status = WEXITSTATUS(status);
 	else
-		st->status = 127; /* abnormal exit */
+		st->status = 127;
 }
 
 /**
@@ -24,7 +23,7 @@ void handle_child_exit(shell_state_t *st, int status)
  * @st: shell state
  * @argv: argument vector
  *
- * Return: 0 always
+ * Return: 0 on success, 127 if not found
  */
 int execute_cmd(shell_state_t *st, char **argv)
 {
@@ -110,7 +109,7 @@ int run_shell(shell_state_t *st)
 		if (!line)
 			return (0);
 
-		argv = split_line(line); 
+		argv = split_line(line);
 		free(line);
 
 		if (!argv)
