@@ -12,11 +12,11 @@ int execute_cmd(shell_state_t *st, char **argv)
 	pid_t pid;
 	int status;
 	char *full_path = NULL;
+	int allocated = 0;
 
 	if (argv == NULL || argv[0] == NULL)
 		return (0);
 
-	/* If command contains '/', try directly */
 	if (strchr(argv[0], '/'))
 	{
 		if (access(argv[0], X_OK) == -1)
@@ -35,12 +35,15 @@ int execute_cmd(shell_state_t *st, char **argv)
 			return (0);
 		}
 		argv[0] = full_path;
+		allocated = 1;
 	}
 
 	pid = fork();
 	if (pid == -1)
 	{
 		perror(st->prog);
+		if (allocated)
+			free(full_path);
 		return (0);
 	}
 
@@ -53,7 +56,7 @@ int execute_cmd(shell_state_t *st, char **argv)
 
 	waitpid(pid, &status, 0);
 
-	if (!strchr(argv[0], '/'))
+	if (allocated)
 		free(full_path);
 
 	return (0);
