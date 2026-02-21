@@ -23,7 +23,7 @@ int execute_cmd(shell_state_t *st, char **argv)
     {
         print_not_found(st, argv[0]);
         st->status = 127;  /* command not found */
-        return (127);
+        return 0;           /* shell продолжает работать */
     }
 
     pid = fork();
@@ -90,7 +90,7 @@ int run_shell(shell_state_t *st)
             continue;
 
         if (argv[0])
-            execute_cmd(st, argv);  
+            execute_cmd(st, argv);
 
         free_argv(argv);
     }
